@@ -5,11 +5,11 @@ mod:
 
 build: mod
 	@go get -u github.com/gobuffalo/packr/v2/packr2
-	@cd starport/interface/cli/starport && packr2
+	@cd starport/interface/cli/starport && packr2 -v
 	@mkdir -p build/
 	@cd ../../..
 	@go build -mod=readonly -o build/ ./starport/interface/cli/...
-	@packr2 clean
+	@cd starport/interface/cli/starport && packr2 clean
 	@go mod tidy
 
 ui:
