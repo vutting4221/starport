@@ -1,0 +1,3 @@
+[submodule "sdk-tutorials"]
+	path = sdk-tutorials
+	url = https://github.com/cosmos/sdk-tutorials
