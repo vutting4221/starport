@@ -21,3 +21,18 @@ func list<%= title(TypeName) %>Handler(clientCtx client.Context) http.HandlerFun
 		rest.PostProcessResponse(w, clientCtx, res)
 	}
 }
+
+func get<%= title(TypeName) %>Handler(clientCtx context.CLIContext, storeName string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		key := vars["key"]
+		
+		res, height, err := clientCtx.QueryWithData(fmt.Sprintf("custom/%s/get-<%= TypeName %>/%s", storeName, key), nil)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusNotFound, err.Error())
+			return
+		}
+		clientCtx = clientCtx.WithHeight(height)
+		rest.PostProcessResponse(w, cliCtx, res)
+	}
+}
