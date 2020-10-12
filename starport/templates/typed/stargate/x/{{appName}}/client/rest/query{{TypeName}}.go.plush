@@ -22,7 +22,7 @@ func list<%= title(TypeName) %>Handler(clientCtx client.Context) http.HandlerFun
 	}
 }
 
-func get<%= title(TypeName) %>Handler(clientCtx context.CLIContext, storeName string) http.HandlerFunc {
+func get<%= title(TypeName) %>Handler(clientCtx client.Context, storeName string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		key := vars["key"]
@@ -33,6 +33,6 @@ func get<%= title(TypeName) %>Handler(clientCtx context.CLIContext, storeName st
 			return
 		}
 		clientCtx = clientCtx.WithHeight(height)
-		rest.PostProcessResponse(w, cliCtx, res)
+		rest.PostProcessResponse(w, clientCtx, res)
 	}
 }

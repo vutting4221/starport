@@ -49,10 +49,10 @@ type set<%= title(TypeName) %>Request struct {
 	<% } %>
 }
 
-func set<%= title(TypeName) %>Handler(clientCtx context.CLIContext) http.HandlerFunc {
+func set<%= title(TypeName) %>Handler(clientCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req set<%= title(TypeName) %>Request
-		if !rest.ReadRESTReq(w, r, clientCtx.Codec, &req) {
+		if !rest.ReadRESTReq(w, r, clientCtx.LegacyAmino, &req) {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, "failed to parse request")
 			return
 		}
@@ -83,10 +83,10 @@ type delete<%= title(TypeName) %>Request struct {
 	Creator string `json:"creator"`
 }
 
-func delete<%= title(TypeName) %>Handler(clientCtx context.CLIContext) http.HandlerFunc {
+func delete<%= title(TypeName) %>Handler(clientCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req delete<%= title(TypeName) %>Request
-		if !rest.ReadRESTReq(w, r, clientCtx.Codec, &req) {
+		if !rest.ReadRESTReq(w, r, clientCtx.LegacyAmino, &req) {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, "failed to parse request")
 			return
 		}
@@ -99,7 +99,7 @@ func delete<%= title(TypeName) %>Handler(clientCtx context.CLIContext) http.Hand
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
-		msg := types.NewMsgDelete<%= title(TypeName) %>(req.Id, creator)
+		msg := types.NewMsgDelete<%= title(TypeName) %>(creator, req.Id)
 
 		err = msg.ValidateBasic()
 		if err != nil {

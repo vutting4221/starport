@@ -9,8 +9,12 @@ import (
 // Create<%= title(TypeName) %> creates a <%= TypeName %>
 func (k Keeper) Create<%= title(TypeName) %>(ctx sdk.Context, <%= TypeName %> types.MsgCreate<%= title(TypeName) %>) {
 	store :=  prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.<%= title(TypeName) %>Key))
-	b := k.cdc.MustMarshalBinaryBare(&<%= TypeName %>)
-	store.Set(types.KeyPrefix(types.<%= title(TypeName) %>Key), b)
+	_, err := k.GetClaim(ctx, claim.Proof)
+	// Check if claim exists
+	if err != nil {
+		b := k.cdc.MustMarshalBinaryBare(&<%= TypeName %>)
+		store.Set(<%= TypeName %>.Id, b)
+	}
 }
 
 // Get<%= title(TypeName) %> returns the <%= TypeName %> information
@@ -24,31 +28,20 @@ func (k Keeper) Get<%= title(TypeName) %>(ctx sdk.Context, key string) (types.<%
 	return <%= TypeName %>, nil
 }
 
-func (k Keeper) Set<%= title(TypeName) %>(ctx sdk.Context, <%= TypeName %> types.Msg<%= title(TypeName) %>) {
+func (k Keeper) Set<%= title(TypeName) %>(ctx sdk.Context, <%= TypeName %> types.<%= title(TypeName) %>) {
 	<%= TypeName %>Key := <%= TypeName %>.Id
 	store :=  prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.<%= title(TypeName) %>Key))
 	b := k.cdc.MustMarshalBinaryBare(&<%= TypeName %>)
 	key := []byte(<%= TypeName %>Key)
 	store.Set(key, b)
-	
-	store :=  prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.<%= title(TypeName) %>Key))
-	b := k.cdc.MustMarshalBinaryBare(&<%= TypeName %>)
-	store.Get(types.KeyPrefix(types.<%= title(TypeName) %>Key), b)
 }
 
-func (k Keeper) SetField<%= title(TypeName) %>(ctx sdk.Context, key, value string) {
+func (k Keeper) DeleteClaim(ctx sdk.Context, key string) {
 	store :=  prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.<%= title(TypeName) %>Key))
-	b := k.cdc.MustMarshalBinaryBare(&<%= TypeName %>)
-	store.Set(types.KeyPrefix(types.<%= title(TypeName) %>Key), b)
+	store.Delete([]byte(key))
 }
 
-func (k Keeper) Delete<%= title(TypeName) %>(ctx sdk.Context, <%= TypeName %> types.Msg<%= title(TypeName) %>) {
-	store :=  prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.<%= title(TypeName) %>Key))
-	b := k.cdc.MustMarshalBinaryBare(&<%= TypeName %>)
-	store.Delete(types.KeyPrefix(types.<%= title(TypeName) %>Key), b)
-}
-
-func (k Keeper) GetAll<%= title(TypeName) %>(ctx sdk.Context) (msgs []types.Msg<%= title(TypeName) %>) {
+func (k Keeper) GetAll<%= title(TypeName) %>(ctx sdk.Context) (msgs []types.<%= title(TypeName) %>) {
     store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.<%= title(TypeName) %>Key))
 	iterator := sdk.KVStorePrefixIterator(store, types.KeyPrefix(types.<%= title(TypeName) %>Key))
 

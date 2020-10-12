@@ -24,7 +24,7 @@ func CmdCreate<%= title(TypeName) %>() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsg<%= title(TypeName) %>(clientCtx.GetFromAddress()<%= for (i, field) in Fields { %>, <%= field.Datatype %>(args<%= title(field.Name) %>)<% } %>)
+			msg := types.NewMsgCreate<%= title(TypeName) %>(clientCtx.GetFromAddress()<%= for (i, field) in Fields { %>, <%= field.Datatype %>(args<%= title(field.Name) %>)<% } %>)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
