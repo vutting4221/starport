@@ -22,7 +22,9 @@ func IsEnabled() bool {
 }
 
 func StartServer(ctx context.Context, port string) error {
-	s, err := chserver.NewServer(&chserver.Config{})
+	s, err := chserver.NewServer(&chserver.Config{
+		KeepAlive: time.Second * 3,
+	})
 	if err != nil {
 		return err
 	}
@@ -37,7 +39,8 @@ func StartServer(ctx context.Context, port string) error {
 
 func StartClient(ctx context.Context, serverAddr, localPort, remotePort string) error {
 	c, err := chclient.NewClient(&chclient.Config{
-		MaxRetryInterval: time.Second,
+		MaxRetryInterval: time.Second * 3,
+		KeepAlive:        time.Second * 3,
 		MaxRetryCount:    -1,
 		Server:           serverAddr,
 		Remotes:          []string{fmt.Sprintf("127.0.0.1:%s:127.0.0.1:%s", localPort, remotePort)},
