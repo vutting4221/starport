@@ -238,7 +238,6 @@ func (c *Chain) Gentx(ctx context.Context, v Validator) (gentxPath string, err e
 			step.Stderr(io.MultiWriter(gentxPathMessage, errb)),
 			step.Stdout(io.MultiWriter(gentxPathMessage, c.stdLog(logAppd).out)),
 		)); err != nil {
-		// we use gentxPathMessage because it may hold an actual error message in case of an exit 1.
 		return "", errors.Wrap(err, errb.String())
 	}
 
