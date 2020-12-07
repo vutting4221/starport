@@ -97,7 +97,7 @@ func (c *Chain) Init(ctx context.Context) error {
 			}
 			return c.plugin.PostInit(conf)
 		}),
-		step.Stderr(&errb),
+		step.Stderr(io.MultiWriter(c.stdLog(logAppd).err, &errb)),
 		step.Stdout(c.stdLog(logAppd).out),
 	))
 
@@ -196,7 +196,7 @@ func (s *Chain) CreateAccount(ctx context.Context, name, mnemonic string, coins 
 				acc.Address = strings.TrimSpace(key.String())
 				return nil
 			}),
-			step.Stderr(&errb),
+			step.Stderr(io.MultiWriter(s.stdLog(logAppcli).err, &errb)),
 			step.Stdout(&key),
 		),
 	)
@@ -235,7 +235,7 @@ func (c *Chain) Gentx(ctx context.Context, v Validator) (gentxPath string, err e
 		New(c.cmdOptions()...).
 		Run(ctx, step.New(
 			c.plugin.GentxCommand(chainID, v),
-			step.Stderr(io.MultiWriter(gentxPathMessage, errb)),
+			step.Stderr(io.MultiWriter(gentxPathMessage, c.stdLog(logAppd).err, errb)),
 			step.Stdout(io.MultiWriter(gentxPathMessage, c.stdLog(logAppd).out)),
 		)); err != nil {
 		return "", errors.Wrap(err, errb.String())
@@ -291,7 +291,7 @@ func (c *Chain) CollectGentx(ctx context.Context) error {
 				c.app.D(),
 				"collect-gentxs",
 			),
-			step.Stderr(&errb),
+			step.Stderr(io.MultiWriter(c.stdLog(logAppd).err, &errb)),
 			step.Stdout(c.stdLog(logAppd).out),
 		)); err != nil {
 		return errors.Wrap(err, errb.String())
