@@ -52,7 +52,7 @@ func (b *Blockchain) init(ctx context.Context, chainID string, mustNotInitialize
 		Path:    b.appPath,
 	}
 
-	c, err := chain.New(app, false, chain.LogSilent)
+	c, err := chain.New(app, false, chain.LogVerbose)
 	if err != nil {
 		return err
 	}
@@ -103,6 +103,7 @@ func initialGenesisPath(appHome string) string {
 // BlockchainInfo hold information about a Blokchain.
 type BlockchainInfo struct {
 	Genesis          jsondoc.Doc
+	Home             string
 	Config           conf.Config
 	RPCPublicAddress string
 }
@@ -123,6 +124,7 @@ func (b *Blockchain) Info() (BlockchainInfo, error) {
 	}
 	return BlockchainInfo{
 		Genesis:          genesis,
+		Home:             b.chain.Home(),
 		Config:           config,
 		RPCPublicAddress: paddr,
 	}, nil

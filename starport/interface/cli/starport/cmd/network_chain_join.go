@@ -3,14 +3,17 @@ package starportcmd
 import (
 	"context"
 	"fmt"
+	"os"
 	"strings"
 
+	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/types"
 	"github.com/rdegges/go-ipify"
 	"github.com/spf13/cobra"
 	"github.com/tendermint/starport/starport/pkg/cliquiz"
 	"github.com/tendermint/starport/starport/pkg/clispinner"
 	"github.com/tendermint/starport/starport/pkg/events"
+	"github.com/tendermint/starport/starport/pkg/spn"
 	"github.com/tendermint/starport/starport/pkg/xchisel"
 	"github.com/tendermint/starport/starport/services/networkbuilder"
 )
@@ -74,9 +77,27 @@ func networkChainJoinHandler(cmd *cobra.Command, args []string) error {
 	}
 	acc, _ := info.Config.AccountByName(info.Config.Validator.Name)
 
+	fmt.Println(info.Home)
+
 	// ask to create an account on target blockchain.
 	printSection(fmt.Sprintf("Account on the blockchain %s", chainID))
-	choosenAccount, err := createAccount(nb, fmt.Sprintf("%s blockchain", chainID))
+	accnb := nb
+	if os.Getenv("GITPOD_WORKSPACE_ID") != "" {
+		var spnoptions []spn.Option
+		spnoptions = append(spnoptions,
+			spn.KeyringBackend(keyring.BackendTest),
+			spn.KeyringHome(info.Home),
+		)
+		accspn, err := spn.New("", "", "", spnoptions...)
+		if err != nil {
+			return err
+		}
+		accnb, err = networkbuilder.New(accspn)
+		if err != nil {
+			return err
+		}
+	}
+	choosenAccount, err := createAccount(accnb, fmt.Sprintf("%s blockchain", chainID))
 	if err != nil {
 		return err
 	}

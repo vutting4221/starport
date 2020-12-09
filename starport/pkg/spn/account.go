@@ -15,13 +15,6 @@ type Account struct {
 	Mnemonic string
 }
 
-// Keyring uses given keyring type as storage.
-func Keyring(keyring string) Option {
-	return func(c *options) {
-		c.keyringBackend = keyring
-	}
-}
-
 // AccountGet retrieves an account by name from the keyring.
 func (c *Client) AccountGet(accountName string) (Account, error) {
 	info, err := c.kr.Key(accountName)

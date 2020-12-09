@@ -38,24 +38,36 @@ type Client struct {
 
 type options struct {
 	keyringBackend string
+	keyringHome    string
 }
 
 // Option configures Client options.
 type Option func(*options)
 
+// KeyringBackend uses given keyring type as storage.
+func KeyringBackend(keyring string) Option {
+	return func(c *options) {
+		c.keyringBackend = keyring
+	}
+}
+
+func KeyringHome(home string) Option {
+	return func(o *options) {
+		o.keyringHome = home
+	}
+}
+
 // New creates a new SPN Client with nodeAddress of a full SPN node.
 // by default, OS is used as keyring backend.
-func New(keyringPath, nodeAddress, apiAddress, faucetAddress string, option ...Option) (*Client, error) {
+func New(nodeAddress, apiAddress, faucetAddress string, option ...Option) (*Client, error) {
 	opts := &options{
 		keyringBackend: keyring.BackendOS,
+		keyringHome:    homedir,
 	}
 	for _, o := range option {
 		o(opts)
 	}
-	if keyringPath == "" {
-		keyringPath = homedir
-	}
-	kr, err := keyring.New(types.KeyringServiceName(), opts.keyringBackend, keyringPath, os.Stdin)
+	kr, err := keyring.New(types.KeyringServiceName(), opts.keyringBackend, opts.keyringHome, os.Stdin)
 	if err != nil {
 		return nil, err
 	}
