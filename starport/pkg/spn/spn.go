@@ -6,15 +6,16 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/http"
+	"os"
+	"strconv"
+	"strings"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/types"
 	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
-	"net/http"
-	"os"
-	"strconv"
-	"strings"
 )
 
 var spn = "spn"
@@ -44,14 +45,17 @@ type Option func(*options)
 
 // New creates a new SPN Client with nodeAddress of a full SPN node.
 // by default, OS is used as keyring backend.
-func New(nodeAddress, apiAddress, faucetAddress string, option ...Option) (*Client, error) {
+func New(keyringPath, nodeAddress, apiAddress, faucetAddress string, option ...Option) (*Client, error) {
 	opts := &options{
 		keyringBackend: keyring.BackendOS,
 	}
 	for _, o := range option {
 		o(opts)
 	}
-	kr, err := keyring.New(types.KeyringServiceName(), opts.keyringBackend, homedir, os.Stdin)
+	if keyringPath == "" {
+		keyringPath = homedir
+	}
+	kr, err := keyring.New(types.KeyringServiceName(), opts.keyringBackend, keyringPath, os.Stdin)
 	if err != nil {
 		return nil, err
 	}
